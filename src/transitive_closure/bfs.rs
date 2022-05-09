@@ -73,4 +73,28 @@ mod tests {
         );
         assert_eq!(exp, mtx);
     }
+
+    #[test]
+    fn bigger() {
+        let mut g = Graph::<(), Directed>::default();
+        let a = g.add_node(());
+        let b = g.add_node(());
+        let c = g.add_node(());
+        let d = g.add_node(());
+        g.add_edge(a, b);
+        g.add_edge(a, c);
+        g.add_edge(b, c);
+        g.add_edge(c, a);
+        g.add_edge(c, d);
+        let mtx = bfs_compute_closure_mtx(&g);
+        let exp = TransitiveClosureMtx::from(
+            vec![
+                vec![true, true, true, true],
+                vec![true, true, true, true],
+                vec![true, true, true, true],
+                vec![false, false, false, true],
+            ]
+        );
+        assert_eq!(exp, mtx);
+    }
 }
