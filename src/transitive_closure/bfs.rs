@@ -4,6 +4,11 @@ use crate::mtx_graph::graph::{Graph, GraphIdx};
 
 use super::mtx::TransitiveClosureMtx;
 
+/// Computes the transitive closure matrix of a given graph
+/// by doing a repeated bfs for each vertex.
+/// Time complexity:
+///   adj-matrix graph: O(V^3)
+///   adj-list graph: O(V * (V + E))
 pub fn bfs_compute_closure_mtx<T, D, W>(graph: &Graph<T, D, W>) -> TransitiveClosureMtx
 where
     T: Hash + Eq + Clone,
@@ -76,6 +81,12 @@ mod tests {
 
     #[test]
     fn bigger() {
+        // graph edges:
+        //   a b c d
+        // a 1 1 1 0
+        // b 0 1 1 0
+        // c 1 0 1 1
+        // d 0 0 0 1
         let mut g = Graph::<(), Directed>::default();
         let a = g.add_node(());
         let b = g.add_node(());
