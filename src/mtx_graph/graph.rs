@@ -5,7 +5,7 @@ use std::{
     ops::{Add, Mul},
 };
 
-use super::iter::BFS;
+use super::iter::{DFS, BFS};
 
 pub enum Weighted {}
 
@@ -93,23 +93,6 @@ impl<T: Hash + Eq + Clone, D, W> Graph<T, D, W> {
     /// Sets the edge weight between two nodes to the given
     /// weight.
     fn add_edge_weight(&mut self, x: GraphIdx, y: GraphIdx, weight: usize) {
-        // [0 0 1 0]
-        // [0 0 0 0]
-        // [1 0 0 0]
-        // [0 0 0 0]
-        //
-        // =>
-        //
-        //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-        // [0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0]
-        //
-        // n = 4
-        // x = 0
-        // y = 2
-        //
-        // 0 * 4 + 2 = 2
-        // 2 * 4 + 0 = 8
-
         let idx = calc_2d_to_1d(x, y, self.n);
         self.mtx[idx] = weight;
     }
@@ -154,6 +137,10 @@ impl<T: Hash + Eq + Clone, D, W> Graph<T, D, W> {
     pub fn has_edge(&self, x: GraphIdx, y: GraphIdx) -> bool {
         let idx = calc_2d_to_1d(x, y, self.n);
         self.mtx[idx] > 0
+    }
+
+    pub fn dfs(&self, start: GraphIdx) -> DFS<T, D, W> {
+        DFS::new(&self, start)
     }
 
     pub fn bfs(&self, start: GraphIdx) -> BFS<T, D, W> {
@@ -266,6 +253,23 @@ impl PartialOrd for QueueNode {
 }
 
 fn calc_2d_to_1d(x: GraphIdx, y: GraphIdx, len: usize) -> usize {
+    // [0 0 1 0]
+    // [0 0 0 0]
+    // [1 0 0 0]
+    // [0 0 0 0]
+    //
+    // =>
+    //
+    //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+    // [0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0]
+    //
+    // n = 4
+    // x = 0
+    // y = 2
+    //
+    // 0 * 4 + 2 = 2
+    // 2 * 4 + 0 = 8
+
     x * len + y
 }
 
