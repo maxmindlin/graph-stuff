@@ -3,6 +3,14 @@ use std::ops::{Index, IndexMut};
 #[derive(Default, Debug, PartialEq, Eq)]
 pub struct TransitiveClosureMtx(Vec<Vec<bool>>);
 
+impl TransitiveClosureMtx {
+    /// Creates a square false-matrix with
+    /// axis length of `len`.
+    pub fn from_len(len: usize) -> Self {
+        Self(vec![vec![false; len]; len])
+    }
+}
+
 impl Index<usize> for TransitiveClosureMtx {
     type Output = Vec<bool>;
 

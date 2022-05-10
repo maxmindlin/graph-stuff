@@ -7,12 +7,16 @@ use std::{
 
 use super::iter::{DFS, BFS};
 
+#[derive(Clone)]
 pub enum Weighted {}
 
+#[derive(Clone)]
 pub enum Unweighted {}
 
+#[derive(Clone)]
 pub enum Directed {}
 
+#[derive(Clone)]
 pub enum Undirected {}
 
 /// Implementation of adjacency matrix backed Graph structure.
@@ -41,9 +45,12 @@ pub enum Undirected {}
 /// // values are u32.
 /// let _ = Graph::<u32, Directed, Weighted>::default();
 /// ```
+#[derive(Clone)]
 pub struct Graph<T, D = Undirected, W = Unweighted>
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
     n: usize,
     mtx: Vec<usize>,
@@ -82,14 +89,23 @@ impl<T: Hash + Eq + Clone> Graph<T, Directed, Weighted> {
     }
 }
 
-impl<T: Hash + Eq + Clone, D> Graph<T, D, Weighted> {
+impl<T, D> Graph<T, D, Weighted>
+where
+    T: Hash + Eq + Clone,
+    D: Clone,
+{
     pub fn edge_weight(&self, x: GraphIdx, y: GraphIdx) -> usize {
         let idx = calc_2d_to_1d(x, y, self.n);
         self.mtx[idx]
     }
 }
 
-impl<T: Hash + Eq + Clone, D, W> Graph<T, D, W> {
+impl<T, D, W> Graph<T, D, W>
+where
+    T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
+{
     /// Sets the edge weight between two nodes to the given
     /// weight.
     fn add_edge_weight(&mut self, x: GraphIdx, y: GraphIdx, weight: usize) {
@@ -215,7 +231,33 @@ impl<T: Hash + Eq + Clone, D, W> Graph<T, D, W> {
     }
 }
 
-impl<T: Hash + Eq + Clone, D, W> Default for Graph<T, D, W> {
+/// Mutates a graph in place to its transpose.
+pub fn transpose<T, D, W>(graph: &mut Graph<T, D, W>)
+where
+    T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
+{
+    let len = graph.nodes();
+    for y in 0..len {
+        for x in y..len {
+            let idxy = GraphIdx(y);
+            let idxx = GraphIdx(x);
+            let a = calc_2d_to_1d(idxx, idxy, len);
+            let b = calc_2d_to_1d(idxy, idxx, len);
+            let tmp = graph.mtx[a];
+            graph.mtx[a] = graph.mtx[b];
+            graph.mtx[b] = tmp;
+        }
+    }
+}
+
+impl<T, D, W> Default for Graph<T, D, W>
+where
+    T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
+{
     fn default() -> Self {
         Self {
             n: 0,
@@ -374,6 +416,29 @@ mod tests {
         let exp_a = vec![0, 0, 1];
         let exp_b = vec![0, 0, 1];
         let exp_c = vec![1, 1, 0];
+        assert_eq!(g.edges(a), &exp_a);
+        assert_eq!(g.edges(b), &exp_b);
+        assert_eq!(g.edges(c), &exp_c);
+    }
+
+    #[test]
+    fn transpose_g() {
+        let mut g = Graph::<(), Directed>::default();
+        let a = g.add_node(());
+        let b = g.add_node(());
+        let c = g.add_node(());
+        g.add_edge(a, b);
+        g.add_edge(c, b);
+        let exp_a = vec![0, 1, 0];
+        let exp_b = vec![0, 0, 0];
+        let exp_c = vec![0, 1, 0];
+        assert_eq!(g.edges(a), &exp_a);
+        assert_eq!(g.edges(b), &exp_b);
+        assert_eq!(g.edges(c), &exp_c);
+        transpose(&mut g);
+        let exp_a = vec![0, 0, 0];
+        let exp_b = vec![1, 0, 1];
+        let exp_c = vec![0, 0, 0];
         assert_eq!(g.edges(a), &exp_a);
         assert_eq!(g.edges(b), &exp_b);
         assert_eq!(g.edges(c), &exp_c);

@@ -12,8 +12,10 @@ use super::mtx::TransitiveClosureMtx;
 pub fn bfs_compute_closure_mtx<T, D, W>(graph: &Graph<T, D, W>) -> TransitiveClosureMtx
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
-    let mut mtx = TransitiveClosureMtx::from(vec![vec![false; graph.nodes()]; graph.nodes()]);
+    let mut mtx = TransitiveClosureMtx::from_len(graph.nodes());
     for y in 0..graph.nodes() {
         let idx = GraphIdx(y);
         for x in graph.bfs(idx) {
@@ -83,10 +85,10 @@ mod tests {
     fn bigger() {
         // graph edges:
         //   a b c d
-        // a 1 1 1 0
-        // b 0 1 1 0
-        // c 1 0 1 1
-        // d 0 0 0 1
+        // a 0 1 1 0
+        // b 0 0 1 0
+        // c 1 0 0 1
+        // d 0 0 0 0
         let mut g = Graph::<(), Directed>::default();
         let a = g.add_node(());
         let b = g.add_node(());

@@ -7,6 +7,8 @@ use super::graph::{Graph, GraphIdx};
 pub struct DFS<'g, T, D, W>
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
     frontier: Vec<GraphIdx>,
     visited: HashSet<GraphIdx>,
@@ -18,6 +20,8 @@ where
 pub struct BFS<'g, T, D, W>
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
     frontier: VecDeque<GraphIdx>,
     visited: HashSet<GraphIdx>,
@@ -27,6 +31,8 @@ where
 impl<'g, T, D, W> DFS<'g, T, D, W>
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
     pub fn new(graph: &'g Graph<T, D, W>, start: GraphIdx) -> Self {
         let mut visited = HashSet::new();
@@ -42,6 +48,8 @@ where
 impl<'g, T, D, W> BFS<'g, T, D, W>
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
     pub fn new(graph: &'g Graph<T, D, W>, start: GraphIdx) -> Self {
         let mut visited = HashSet::new();
@@ -59,6 +67,8 @@ where
 impl<'g, T, D, W> Iterator for DFS<'g, T, D, W>
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
     type Item = GraphIdx;
 
@@ -87,6 +97,8 @@ where
 impl <'g, T, D, W> Iterator for BFS<'g, T, D, W>
 where
     T: Hash + Eq + Clone,
+    D: Clone,
+    W: Clone,
 {
     type Item = GraphIdx;
 
