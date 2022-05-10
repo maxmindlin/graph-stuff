@@ -117,6 +117,8 @@ where
 mod tests {
     use crate::mtx_graph::graph::Directed;
 
+    use std::iter::FromIterator;
+
     use super::*;
 
     #[test]
@@ -133,6 +135,7 @@ mod tests {
         g.add_edge(a, d);
         g.add_edge(d, e);
         let r = Tarjan::new(&g).sccs();
-        println!("{:?}", r);
+        let num = HashSet::<&usize>::from_iter(r.iter()).len();
+        assert_eq!(num, 3);
     }
 }
