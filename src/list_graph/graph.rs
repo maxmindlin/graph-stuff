@@ -38,6 +38,26 @@ impl<V, D, E> Graph<V, D, E> {
         &self.nodes
     }
 
+    pub fn replace_nodes(&mut self, from: &[usize], to: usize) {
+        // Replace every edge that connects a `from` vertex
+        // to the `to` vertex.
+        for node in self.nodes.iter_mut() {
+            for edge in node.edges.iter_mut() {
+                if from.contains(&edge.next) {
+                    edge.next = to;
+                }
+            }
+        }
+
+        // Remove the nodes that have been replaced.
+        let mut idx = 0;
+        self.nodes
+            .retain(|_| {
+                idx += 1;
+                !from.contains(&(idx - 1))
+            })
+    }
+
     pub fn neighbors(&self, idx: usize) -> impl Iterator<Item = &usize> {
         self.edges(idx).iter().map(|e| &e.next)
     }

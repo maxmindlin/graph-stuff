@@ -7,7 +7,7 @@ use super::mtx::TransitiveClosureMtx;
 /// Time complexity:
 ///   adj-matrix graph: O(V^3)
 ///   adj-list graph: O(V * (V + E))
-pub fn bfs_compute_closure_mtx<V, D>(graph: &Graph<V, D>) -> TransitiveClosureMtx
+pub fn bfs_compute_closure_mtx<V, D, E>(graph: &Graph<V, D, E>) -> TransitiveClosureMtx
 {
     let mut mtx = TransitiveClosureMtx::from_len(graph.len());
     for (y, _) in graph.nodes().iter().enumerate() {

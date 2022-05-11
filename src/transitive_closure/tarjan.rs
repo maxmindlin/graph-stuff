@@ -47,9 +47,9 @@ impl<'g, V, D, E> Tarjan<'g, V, D, E> {
     fn dfs(&mut self, at: usize) {
         self.stack.push(at);
         self.on_stack[at] = true;
-        self.id += 1;
         self.ids[at] = self.id as isize;
         self.low[at] = self.id;
+        self.id += 1;
         for neighbor in self.graph.neighbors(at) {
             if self.ids[*neighbor] == -1 {
                 self.dfs(*neighbor);
@@ -92,6 +92,7 @@ mod tests {
         g.add_edge(a, d, 1);
         g.add_edge(d, e, 1);
         let r = Tarjan::new(&g).sccs();
+        println!("{:?}", r);
         let num = HashSet::<&usize>::from_iter(r.iter()).len();
         assert_eq!(num, 3);
     }
