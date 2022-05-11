@@ -2,8 +2,10 @@ use std::{marker::PhantomData, ops::Index};
 
 use super::{node::Node, edge::Edge, iter::BFS};
 
+#[derive(Debug, Clone, Copy)]
 pub enum Directed {}
 
+#[derive(Debug, Clone, Copy)]
 pub enum Undirected {}
 
 /// Implementation of an adjacency-list backed
@@ -28,12 +30,16 @@ impl<V, D, E> Graph<V, D, E> {
         self.nodes.len() - 1
     }
 
-    pub fn edges(&self, node: usize) -> &[Edge<E>] {
-        &self.nodes[node].edges
+    pub fn edges(&self, idx: usize) -> &[Edge<E>] {
+        &self.nodes[idx].edges
     }
 
     pub fn nodes(&self) -> &[Node<V, E>] {
         &self.nodes
+    }
+
+    pub fn neighbors(&self, idx: usize) -> impl Iterator<Item = &usize> {
+        self.edges(idx).iter().map(|e| &e.next)
     }
 
     pub fn len(&self) -> usize {
