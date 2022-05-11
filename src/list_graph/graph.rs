@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ops::Index};
 
-use super::{node::Node, edge::Edge};
+use super::{node::Node, edge::Edge, iter::BFS};
 
 pub enum Directed {}
 
@@ -30,6 +30,18 @@ impl<V, D, E> Graph<V, D, E> {
 
     pub fn edges(&self, node: usize) -> &[Edge<E>] {
         &self.nodes[node].edges
+    }
+
+    pub fn nodes(&self) -> &[Node<V, E>] {
+        &self.nodes
+    }
+
+    pub fn len(&self) -> usize {
+        self.nodes.len()
+    }
+
+    pub fn bfs(&self, start: usize) -> BFS<V, D, E> {
+        BFS::new(&self, start)
     }
 }
 

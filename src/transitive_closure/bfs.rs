@@ -1,6 +1,4 @@
-use std::hash::Hash;
-
-use crate::mtx_graph::graph::{Graph, GraphIdx};
+use crate::list_graph::graph::Graph;
 
 use super::mtx::TransitiveClosureMtx;
 
@@ -9,17 +7,12 @@ use super::mtx::TransitiveClosureMtx;
 /// Time complexity:
 ///   adj-matrix graph: O(V^3)
 ///   adj-list graph: O(V * (V + E))
-pub fn bfs_compute_closure_mtx<T, D, W>(graph: &Graph<T, D, W>) -> TransitiveClosureMtx
-where
-    T: Hash + Eq + Clone,
-    D: Clone,
-    W: Clone,
+pub fn bfs_compute_closure_mtx<V, D>(graph: &Graph<V, D>) -> TransitiveClosureMtx
 {
-    let mut mtx = TransitiveClosureMtx::from_len(graph.nodes());
-    for y in 0..graph.nodes() {
-        let idx = GraphIdx(y);
-        for x in graph.bfs(idx) {
-            mtx[y][x.0] = true;
+    let mut mtx = TransitiveClosureMtx::from_len(graph.len());
+    for (y, _) in graph.nodes().iter().enumerate() {
+        for x in graph.bfs(y) {
+            mtx[y][x] = true;
         }
     }
 
@@ -28,7 +21,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::mtx_graph::graph::Directed;
+    use crate::list_graph::graph::Directed;
 
     use super::*;
 
@@ -42,11 +35,11 @@ mod tests {
         // a 1 1
         // b 1 1
         //
-        let mut g = Graph::<(), Directed>::default();
+        let mut g = Graph::<(), Directed>::new();
         let a = g.add_node(());
         let b = g.add_node(());
-        g.add_edge(a, b);
-        g.add_edge(b, a);
+        g.add_edge(a, b, 1);
+        g.add_edge(b, a, 1);
         let mtx = bfs_compute_closure_mtx(&g);
         let exp = TransitiveClosureMtx::from(
             vec![
@@ -67,10 +60,10 @@ mod tests {
         // a 1 1
         // b 0 1
         //
-        let mut g = Graph::<(), Directed>::default();
+        let mut g = Graph::<(), Directed>::new();
         let a = g.add_node(());
         let b = g.add_node(());
-        g.add_edge(a, b);
+        g.add_edge(a, b, 1);
         let mtx = bfs_compute_closure_mtx(&g);
         let exp = TransitiveClosureMtx::from(
             vec![
@@ -89,16 +82,16 @@ mod tests {
         // b 0 0 1 0
         // c 1 0 0 1
         // d 0 0 0 0
-        let mut g = Graph::<(), Directed>::default();
+        let mut g = Graph::<(), Directed>::new();
         let a = g.add_node(());
         let b = g.add_node(());
         let c = g.add_node(());
         let d = g.add_node(());
-        g.add_edge(a, b);
-        g.add_edge(a, c);
-        g.add_edge(b, c);
-        g.add_edge(c, a);
-        g.add_edge(c, d);
+        g.add_edge(a, b, 1);
+        g.add_edge(a, c, 1);
+        g.add_edge(b, c, 1);
+        g.add_edge(c, a, 1);
+        g.add_edge(c, d, 1);
         let mtx = bfs_compute_closure_mtx(&g);
         let exp = TransitiveClosureMtx::from(
             vec![
